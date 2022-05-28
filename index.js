@@ -1,6 +1,7 @@
 const express = require('express')
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const cors = require('cors');
+const { get } = require('express/lib/response');
 require('dotenv').config();
 const app = express()
 const port = process.env.PORT || 5000
@@ -27,6 +28,13 @@ async function run() {
             const products = await cursor.toArray();
             res.send(products);
         });
+
+        //Product add
+        app.post('/product', async (req, res) => {
+            const product = req.body;
+            const result = await productsCollection.insertOne(product);
+            res.send(result);
+        })
 
         app.get('/order', async (req, res) => {
             const email = req.query.email;
