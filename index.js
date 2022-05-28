@@ -18,6 +18,7 @@ async function run() {
         await client.connect();
         const productsCollection = client.db("technology_holdings").collection("products");
         const orderCollection = client.db("technology_holdings").collection("order");
+        const userCollection = client.db("technology_holdings").collection("user");
 
         // products shown
         app.get('/product', async (req, res) => {
@@ -32,6 +33,46 @@ async function run() {
             const query = { email: email };
             const order = await orderCollection.find(query).toArray();
             res.send(order);
+        });
+
+        // all user shown in ui
+
+        app.get('/user', async (req, res) => {
+            const users = await userCollection.find().toArray();
+            res.send(users);
+        });
+
+        // make a admin
+        app.put('/user/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const filter = { email: email };
+            const updateDoc = {
+                $set: { role: 'admin' },
+            };
+            const result = await userCollection.updateOne(filter, updateDoc);
+            res.send(result);
+        })
+
+        // feature access
+
+        app.get('/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = await userCollection.findOne({ email: email });
+            const isAdmin = user.role === 'admin';
+            res.send({ admin: isAdmin })
+        })
+        // Update or Insert
+
+        app.put('/user/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = req.body;
+            const filter = { email: email };
+            const options = { upsert: true }
+            const updateDoc = {
+                $set: user,
+            };
+            const result = await userCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
         })
 
         // order place
