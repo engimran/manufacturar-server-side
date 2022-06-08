@@ -20,6 +20,7 @@ async function run() {
         const productsCollection = client.db("technology_holdings").collection("products");
         const orderCollection = client.db("technology_holdings").collection("order");
         const userCollection = client.db("technology_holdings").collection("user");
+        const reviewCollection = client.db("technology_holdings").collection("review");
 
         // products shown
         app.get('/product', async (req, res) => {
@@ -33,6 +34,12 @@ async function run() {
         app.post('/product', async (req, res) => {
             const product = req.body;
             const result = await productsCollection.insertOne(product);
+            res.send(result);
+        })
+        //Review add
+        app.post('/review', async (req, res) => {
+            const product = req.body;
+            const result = await reviewCollection.insertOne(review);
             res.send(result);
         })
 
