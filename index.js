@@ -38,10 +38,10 @@ async function run() {
         })
         //Review add
         app.post('/review', async (req, res) => {
-            const product = req.body;
+            const review = req.body;
             const result = await reviewCollection.insertOne(review);
             res.send(result);
-        })
+        });
 
         app.get('/order', async (req, res) => {
             const email = req.query.email;
