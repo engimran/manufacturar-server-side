@@ -1,5 +1,5 @@
 const express = require('express')
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require('cors');
 const { get } = require('express/lib/response');
 require('dotenv').config();
@@ -64,6 +64,17 @@ async function run() {
             const users = await userCollection.find().toArray();
             res.send(users);
         });
+
+        // order payment shown in ui
+
+        app.get('/order/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const order = await orderCollection.findOne(query);
+            res.send(order);
+
+        })
+
 
         // make a admin
         app.put('/user/admin/:email', async (req, res) => {
