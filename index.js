@@ -4,9 +4,10 @@ const cors = require('cors');
 const { get } = require('express/lib/response');
 require('dotenv').config();
 const app = express()
+const stripe = require('stripe')('sk_test_51LBAjZABePCjlqMNC03veBhizupSncEBh9r8eLe7dVI5bq4pXI0uuSvTgIwMMgtQSGc33PpM2j11lRHfRxAn9x7C00owUwZ7Ao');
 const port = process.env.PORT || 5000
 
-app.use(cors());
+app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(express.json());
 
 const uri = "mongodb+srv://technology:G1bLQrOu15eCGUip@cluster0.xy3vc.mongodb.net/?retryWrites=true&w=majority";
@@ -21,6 +22,20 @@ async function run() {
         const orderCollection = client.db("technology_holdings").collection("order");
         const userCollection = client.db("technology_holdings").collection("user");
         const reviewCollection = client.db("technology_holdings").collection("review");
+
+        // payment
+
+        app.post('/create-payment-intent', async (req, res) => {
+            const product = req.body;
+            const orderPrice = product.orderPrice;
+            const amount = orderPrice * 100;
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: amount,
+                currency: 'usd',
+                payment_method_types: ['card']
+            });
+            res.send({ clientSecret: paymentIntent.client_secret })
+        });
 
         // products shown
         app.get('/product', async (req, res) => {
