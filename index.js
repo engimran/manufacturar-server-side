@@ -22,6 +22,7 @@ async function run() {
         const orderCollection = client.db("technology_holdings").collection("order");
         const userCollection = client.db("technology_holdings").collection("user");
         const reviewCollection = client.db("technology_holdings").collection("review");
+        const paymentCollection = client.db("technology_holdings").collection("payments");
 
         // payment
 
@@ -88,6 +89,23 @@ async function run() {
             const order = await orderCollection.findOne(query);
             res.send(order);
 
+        })
+
+        // payment transaction Id store 
+
+        app.patch('/order/:id', async (req, res) => {
+            const id = req.params.id;
+            const payment = req.body;
+            const filter = { _id: ObjectId(id) };
+            const updatedDoc = {
+                $set: {
+                    paid: true,
+                    transaction: payment.transaction,
+                }
+            }
+            const updatedOrder = await orderCollection.updateOne(filter, updatedDoc);
+            const result = await paymentCollection.insertOne(payment);
+            res.send(updatedDoc);
         })
 
 
