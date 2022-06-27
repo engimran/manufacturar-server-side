@@ -81,7 +81,7 @@ async function run() {
             res.send(users);
         });
 
-        // order payment shown in ui
+        // order payment shown
 
         app.get('/order/:id', async (req, res) => {
             const id = req.params.id;
